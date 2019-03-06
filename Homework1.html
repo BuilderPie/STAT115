@@ -202,6 +202,9 @@ $(document).ready(function () {
 <p><strong>Please install the following R/Bioconductor packages. Some are needed for this assigment, and others are for Homework 2.</strong></p>
 <pre class="r"><code>if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
     install.packages(&quot;BiocManager&quot;)
+#add by Dian 2019.3.5
+options(repos = c(CRAN = &quot;http://cran.rstudio.com&quot;))
+
 BiocManager::install(&quot;affy&quot;, version = &quot;3.8&quot;)
 BiocManager::install(&quot;affyPLM&quot;, version = &quot;3.8&quot;)
 BiocManager::install(&quot;hgu133plus2.db&quot;, version = &quot;3.8&quot;)
@@ -235,7 +238,9 @@ mean(x1)</code></pre>
 mean(x1_na)</code></pre>
 <pre><code>## [1] NA</code></pre>
 <p><strong>Please use R documentation to find the mean after excluding NA’s (hint: <code>?mean</code>)</strong></p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+mean(x1_na, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 9.545455</code></pre>
 </div>
 </div>
 <div id="part-ii-data-manipulation" class="section level1">
@@ -263,31 +268,100 @@ head(GaltonFamilies)</code></pre>
 <ol style="list-style-type: lower-alpha">
 <li><strong>Please report the height of the 10th child in the dataset.</strong></li>
 </ol>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+print(paste('The height of the 10th child height is: ', GaltonFamilies[10, ]$childHeight, sep = ''))</code></pre>
+<pre><code>## [1] &quot;The height of the 10th child height is: 68&quot;</code></pre>
 <ol start="2" style="list-style-type: lower-alpha">
 <li><strong>What is the breakdown of male and female children in the dataset?</strong></li>
 </ol>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+lenMale &lt;- sum(GaltonFamilies$gender == &quot;male&quot;)
+lenFemale &lt;- sum(GaltonFamilies$gender == &quot;female&quot;)
+lenAll &lt;- length(GaltonFamilies$gender)
+print(paste(&quot;The breakdown of male is: &quot;, sprintf(&quot;%.2f&quot;, lenMale/lenAll*100), &quot;%&quot;, sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;The breakdown of male is: 51.50%&quot;</code></pre>
+<pre class="r"><code>print(paste(&quot;The breakdown of female is: &quot;, sprintf(&quot;%.2f&quot;, lenFemale/lenAll*100), &quot;%&quot;, sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;The breakdown of female is: 48.50%&quot;</code></pre>
 <ol start="3" style="list-style-type: lower-alpha">
 <li><strong>How many observations are in Galton’s dataset? Please answer this question without consulting the R help.</strong></li>
 </ol>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+print(paste(&quot;The number of observations in Galton's dataset is: &quot;, dim(GaltonFamilies)[1], sep = &quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;The number of observations in Galton's dataset is: 934&quot;</code></pre>
 <ol start="4" style="list-style-type: lower-alpha">
 <li><strong>What is the mean height for the 1st child in each family?</strong></li>
 </ol>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+print(paste(&quot;The mean height for the 1st child in each family is: &quot;, sprintf(&quot;%.3f&quot;, mean(GaltonFamilies$childHeight[GaltonFamilies$childNum == 1])), sep = &quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;The mean height for the 1st child in each family is: 69.821&quot;</code></pre>
 <ol start="5" style="list-style-type: lower-alpha">
 <li><strong>Create a table showing the mean height for male and female children.</strong></li>
 </ol>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+library(knitr)
+df &lt;- data.frame(&quot;Height&quot; = c(
+  sprintf(&quot;%0.2f&quot;, mean(GaltonFamilies$childHeight[GaltonFamilies$gender == &quot;male&quot;])),
+  sprintf(&quot;%0.2f&quot;,mean(GaltonFamilies$childHeight[GaltonFamilies$gender == &quot;female&quot;]))))
+rownames(df) &lt;- c(&quot;Male&quot;, &quot;Female&quot;)
+knitr::kable(df, format = &quot;html&quot;, caption = &quot;The mean height for male and female children&quot;)</code></pre>
+<table>
+<caption>
+The mean height for male and female children
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Height
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+69.23
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+64.10
+</td>
+</tr>
+</tbody>
+</table>
 <ol start="6" style="list-style-type: lower-alpha">
 <li><strong>What was the average number of children each family had?</strong></li>
 </ol>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+print(paste(&quot;The average number of children each family had was:&quot;, sprintf(&quot;%.2f&quot;, lenAll / length(levels(GaltonFamilies$family))) ))</code></pre>
+<pre><code>## [1] &quot;The average number of children each family had was: 4.56&quot;</code></pre>
 <ol start="7" style="list-style-type: lower-alpha">
 <li><strong>Convert the children’s heights from inches to centimeters and store it in a column called <code>childHeight_cm</code> in the <code>GaltonFamilies</code> dataset. Show the first few rows of this dataset.</strong></li>
 </ol>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+GaltonFamilies$childHeight_cm &lt;- GaltonFamilies$childHeight * 2.54
+head(GaltonFamilies)</code></pre>
+<pre><code>##   family father mother midparentHeight children childNum gender
+## 1    001   78.5   67.0           75.43        4        1   male
+## 2    001   78.5   67.0           75.43        4        2 female
+## 3    001   78.5   67.0           75.43        4        3 female
+## 4    001   78.5   67.0           75.43        4        4 female
+## 5    002   75.5   66.5           73.66        4        1   male
+## 6    002   75.5   66.5           73.66        4        2   male
+##   childHeight childHeight_cm
+## 1        73.2        185.928
+## 2        69.2        175.768
+## 3        69.0        175.260
+## 4        69.0        175.260
+## 5        73.5        186.690
+## 6        72.5        184.150</code></pre>
 </div>
 <div id="problem-4-spurious-correlation" class="section level2">
 <h2>Problem 4: Spurious Correlation</h2>
@@ -303,14 +377,30 @@ sim_data &lt;- data.frame(group = rep(1:ngroups, each = N),
 <li><strong>Find the correlation between X and Y for each group, and display the highest correlations.</strong></li>
 </ol>
 <p>Hint: since the data is quite large and your code might take a few moments to run, you can test your code on a subset of the data first (e.g. you can take the first 100 groups like so):</p>
-<pre class="r"><code>sim_data_sub &lt;- sim_data %&gt;% filter(group &lt;= 100)</code></pre>
+<pre class="r"><code>sim_data_sub &lt;- sim_data %&gt;% filter(group &lt;= 100)
+# max_sub &lt;- max(sapply(1:100, function(x) cor(sim_data_sub[sim_data_sub$group == x, 2], sim_data_sub[sim_data_sub$group == x, 3])))
+corr_sub &lt;- rep(0, 100)
+for (i in 1:100){
+  corr_sub[i] &lt;- cor(sim_data[((i-1)*N+1):(i*N), 2], sim_data[((i-1)*N+1):(i*N), 3])
+}
+max_sub &lt;- max(corr_sub)
+print(paste(&quot;The highest correlation amont the first 100 groups is: &quot;, sprintf(&quot;%.3f&quot;, max_sub)))</code></pre>
+<pre><code>## [1] &quot;The highest correlation amont the first 100 groups is:  0.445&quot;</code></pre>
 <p>In general, this is good practice whenever you have a large dataset: If you are writing new code and it takes a while to run on the whole dataset, get it to work on a subset first. By running on a subset, you can iterate faster.</p>
 <p>However, please do run your final code on the whole dataset.</p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+# corr_all &lt;- (sapply(1:ngroups, function(x) cor(sim_data[sim_data$group == x, 2], sim_data[sim_data$group == x, 3])))
+corr_all &lt;- rep(0, ngroups)
+for (i in 1:ngroups){
+  corr_all[i] &lt;- cor(sim_data[((i-1)*N+1):(i*N), 2], sim_data[((i-1)*N+1):(i*N), 3])
+}
+max_all &lt;- max(corr_all)
+print(paste(&quot;The highest correlation amont the first 100 groups is: &quot;, sprintf(&quot;%.3f&quot;, max_all)))</code></pre>
+<pre><code>## [1] &quot;The highest correlation amont the first 100 groups is:  0.801&quot;</code></pre>
 <ol start="2" style="list-style-type: lower-alpha">
 <li><strong>The highest correlation is around 0.8. Can you explain why we see such a high correlation when X and Y are supposed to be independent and thus uncorrelated?</strong></li>
 </ol>
-<p>Your answer here as text.</p>
+<p>Your answer here as text. Because the chance that certain groups simulations X and Y might still coincide to have simlar or the opposite trend to each other, when the iteration time is extremely large.</p>
 </div>
 </div>
 <div id="part-iii-plotting" class="section level1">
@@ -318,7 +408,26 @@ sim_data &lt;- data.frame(group = rep(1:ngroups, each = N),
 <div id="problem-5" class="section level2">
 <h2>Problem 5</h2>
 <p><strong>Show a plot of the data for the group that had the highest correlation you found in Problem 4.</strong></p>
-<pre class="r"><code># your code here</code></pre>
+<pre class="r"><code># your code here
+index &lt;- which(corr_all == max_all)
+df2 &lt;- data.frame(Group = rep(&quot;Fit&quot;, N),
+                  X = sim_data[((index-1)*N+1):(index*N), 2], 
+                  Y = sim_data[((index-1)*N+1):(index*N), 3])
+
+model &lt;- lm(Y ~ X, data=df2)
+df2$FIT &lt;- fitted(model)
+
+p &lt;- ggplot(df2, aes(x=X, y=Y)) +
+  theme_classic() +
+  scale_color_manual(values=c( &quot;#E69F00&quot;)) +
+  geom_point() +
+  geom_line(data = df2, aes(x = X, y = FIT, colour = Group), size = 1, linetype = &quot;dashed&quot;)
+
+p +
+  ylim(-2.5, 2.5) + xlim(-2.5, 2.5) +
+  labs(title = bquote(atop(&quot;Y ~ X , group = &quot; ~ .(index) ~&quot;, correlation coefficient = &quot;  ~ .(sprintf(&quot;%.3f&quot;, max_all))))) + 
+  labs(x = bquote(&quot;X&quot;),y = bquote(&quot;Y&quot;))</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /></p>
 </div>
 <div id="problem-6" class="section level2">
 <h2>Problem 6</h2>
