@@ -363,7 +363,15 @@ the 3 ABL in control samples. Do the raw data need normalization?**
 
 ```{r MAplot}
 # your code here
+dirList <- dir(("./data"))
+print(dirList)
+celFiles <- list.celfiles(path = "data", full.names=TRUE)
+data.affy <- ReadAffy(filenames = celFiles)
+
+MAplot(data.affy, pairs = TRUE, which=c(1,3,5),
+       plot.method = "smoothScatter", cex = 0.9)
 ```
+My answer is yes, because these three control groups have different median value. Without normalization, it would be bias the downstream analysis.
 
 ## Problem 8
 
@@ -376,7 +384,15 @@ ABL control samples after RMA. Is the RMA normalization successful?**
 
 ```{r rma}
 # your code here
+data.rma <- rma(data.affy)
+expr.rma <- exprs(data.rma) # format as table
+head(expr.rma[, c(1,3,5)])
+MAplot(data.rma, pairs = TRUE, which=c(1,3,5),
+       plot.method = "smoothScatter", cex = 0.9)
 ```
+The assumptions behind RMA quantile normalization is most genes / probes don't change between two conditions.
+
+My answer is yes. First the median value for three normalized control groups all reach to zero. Second the shape of three red lines are very close to each other.
 
 # Part V: Python
 
@@ -410,6 +426,6 @@ def solution(A):
     return maxSlice
 
 arr = [-2, 1, 7, -4, 5, 2, -3, -6, 4, 3, -8, -1, 6, -7, -9, -5]
-solution(arr)
+print(solution(arr))
 ```
 
